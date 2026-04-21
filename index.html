@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPU Sizing Calculator — Paralleliq</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #7B35D4;
+      --blue:   #4A6CF7;
+      --cyan:   #00C4C4;
+      --bg:     #0a0a1a;
+      --card:   #111128;
+      --card2:  #16163a;
+      --text:   #e8eaf6;
+      --muted:  #8b8fad;
+      --border: #1e2048;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 80px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header img {
+      height: 52px;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    /* ── Card ────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 580px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+    }
+
+    /* ── Form ────────────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input, select {
+      padding: 11px 36px 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.97rem;
+      color: var(--text);
+      background: var(--card2);
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: "▾";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 0.85rem;
+    }
+
+    /* ── Button ──────────────────────────────────────────── */
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--purple), var(--blue), var(--cyan));
+      color: #fff;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    button:hover { opacity: 0.92; }
+    button:active { transform: scale(0.99); }
+
+    /* ── Results ─────────────────────────────────────────── */
+    #results { margin-top: 32px; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 28px;
+      opacity: 0.5;
+    }
+
+    .results-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .rec-primary {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--purple), var(--blue), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .rec-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .breakdown-item {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .breakdown-item .bi-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .breakdown-item .bi-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .breakdown-item[data-state="ok"]   .bi-value { color: #4ade80; }
+    .breakdown-item[data-state="warn"] .bi-value { color: #fbbf24; }
+    .breakdown-item[data-state="risk"] .bi-value { color: #f87171; }
+
+    .signal-box {
+      background: linear-gradient(135deg, rgba(123,53,212,0.12), rgba(0,196,196,0.08));
+      border: 1px solid rgba(74,108,247,0.25);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .signal-box strong { color: var(--cyan); }
+
+    /* ── CTA ─────────────────────────────────────────────── */
+    .cta-section {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .cta-section p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .cta-section a { color: var(--blue); text-decoration: none; }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer a { color: var(--blue); text-decoration: none; }
+
+    @media (max-width: 480px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .breakdown { grid-template-columns: 1fr; }
+      .card { padding: 24px 20px; }
+      .rec-primary { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="Paralleliq" />
+    <h1>GPU Sizing Calculator</h1>
+    <p>Get a GPU type, node count, and scaling strategy recommendation based on your model and traffic pattern — before you deploy.</p>
+  </header>
+
+  <div class="card">
+
+    <div class="form-grid">
+
+      <div class="field full">
+        <label>Cloud Provider</label>
+        <div class="select-wrap">
+          <select id="provider">
+            <option value="gcp" selected>Google Cloud (GCP)</option>
+            <option value="aws">Amazon Web Services (AWS)</option>
+            <option value="azure">Microsoft Azure</option>
+            <option value="coreweave">CoreWeave</option>
+            <option value="lambda">Lambda Labs</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Model Size</label>
+        <div class="select-wrap">
+          <select id="modelSize">
+            <option value="7b">7B – 8B</option>
+            <option value="13b">13B</option>
+            <option value="22b">22B</option>
+            <option value="30b">30B – 40B</option>
+            <option value="70b" selected>70B – 72B</option>
+            <option value="180b">180B+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Quantization</label>
+        <div class="select-wrap">
+          <select id="quantization">
+            <option value="fp16">fp16 / bf16</option>
+            <option value="int8">int8</option>
+            <option value="int4">int4</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Avg Requests / sec</label>
+        <input type="number" id="avgRps" placeholder="e.g. 5" min="0.1" step="0.1" />
+      </div>
+
+      <div class="field">
+        <label>Peak Requests / sec</label>
+        <input type="number" id="peakRps" placeholder="e.g. 40" min="1" />
+      </div>
+
+      <div class="field">
+        <label>Traffic Pattern</label>
+        <div class="select-wrap">
+          <select id="trafficPattern">
+            <option value="spiky">Spiky — bursts with quiet periods</option>
+            <option value="steady">Steady — consistent throughout day</option>
+            <option value="mixed">Mixed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Target Latency (ms)</label>
+        <input type="number" id="latency" placeholder="e.g. 500" min="50" />
+      </div>
+
+      <div class="field full">
+        <label>Max Context Length</label>
+        <div class="select-wrap">
+          <select id="seqLen">
+            <option value="512">512 tokens</option>
+            <option value="1024">1K tokens</option>
+            <option value="2048" selected>2K tokens</option>
+            <option value="4096">4K tokens</option>
+            <option value="8192">8K tokens</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <button onclick="calculate()">Get My Sizing Recommendation</button>
+
+    <!-- ── Results ── -->
+    <div id="results" style="display:none">
+      <hr class="divider" />
+
+      <div class="results-label">Recommended Configuration</div>
+      <div class="rec-primary" id="recPrimary">—</div>
+      <div class="rec-sub" id="recSub"></div>
+
+      <div class="breakdown">
+        <div class="breakdown-item" id="tileScaling">
+          <div class="bi-value" id="scalingType">—</div>
+          <div class="bi-label">Scaling strategy</div>
+        </div>
+        <div class="breakdown-item" id="tileCost">
+          <div class="bi-value" id="estCost">—</div>
+          <div class="bi-label">Est. monthly cost</div>
+        </div>
+        <div class="breakdown-item" id="tileVram">
+          <div class="bi-value" id="vramHeadroom">—</div>
+          <div class="bi-label">VRAM headroom at peak</div>
+        </div>
+        <div class="breakdown-item" id="tileNodes">
+          <div class="bi-value" id="nodeCount">—</div>
+          <div class="bi-label">Recommended nodes</div>
+        </div>
+      </div>
+
+      <div class="signal-box" id="signalBox"></div>
+
+      <button onclick="window.location.href='https://github.com/paralleliq/piqc'">
+        Already Deployed? Run a Free Scan
+      </button>
+      <div class="cta-section">
+        <p>piqc scans your Kubernetes cluster in seconds. No agents, no instrumentation.<br/>
+        <a href="mailto:info@paralleliq.ai">Questions? info@paralleliq.ai</a></p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    © 2026 Paralleliq · <a href="https://paralleliq.ai">paralleliq.ai</a> · <a href="https://github.com/paralleliq/piqc">Open-source scanner</a>
+  </footer>
+
+  <script>
+    const PROVIDER_COSTS = {
+      'gcp':       { 't4':0.35, 'l4':0.54, 'a10':0.90, 'a100-40':2.21, 'a100-80':3.06, 'h100':3.50, 'mi300x':3.80 },
+      'aws':       { 't4':0.53, 'l4':0.81, 'a10':1.01, 'a100-40':3.21, 'a100-80':4.10, 'h100':5.12, 'mi300x':4.00 },
+      'azure':     { 't4':0.52, 'l4':0.78, 'a10':1.17, 'a100-40':3.06, 'a100-80':3.67, 'h100':4.77, 'mi300x':4.50 },
+      'coreweave': { 't4':0.28, 'l4':0.43, 'a10':0.85, 'a100-40':2.06, 'a100-80':2.76, 'h100':2.95, 'mi300x':3.20 },
+      'lambda':    { 't4':0.26, 'l4':0.40, 'a10':0.76, 'a100-40':1.99, 'a100-80':2.49, 'h100':2.49, 'mi300x':3.49 },
+    };
+
+    const GPU_SPECS = [
+      { key:'t4',      mem:16,  label:'NVIDIA T4'       },
+      { key:'l4',      mem:24,  label:'NVIDIA L4'       },
+      { key:'a10',     mem:24,  label:'NVIDIA A10'      },
+      { key:'a100-40', mem:40,  label:'A100 40GB'       },
+      { key:'a100-80', mem:80,  label:'A100 80GB'       },
+      { key:'h100',    mem:80,  label:'NVIDIA H100'     },
+      { key:'mi300x',  mem:192, label:'AMD MI300X'      },
+    ];
+
+    const MODEL_MEMORY = {
+      '7b':  { 'fp16':14,  'int8':7,   'int4':4  },
+      '13b': { 'fp16':26,  'int8':13,  'int4':7  },
+      '22b': { 'fp16':44,  'int8':22,  'int4':11 },
+      '30b': { 'fp16':60,  'int8':30,  'int4':15 },
+      '70b': { 'fp16':140, 'int8':70,  'int4':35 },
+      '180b':{ 'fp16':360, 'int8':180, 'int4':90 },
+    };
+
+    const KV_PER_TOKEN_MB = {
+      '7b':0.50, '13b':0.82, '22b':1.57, '30b':2.02, '70b':2.62, '180b':6.29
+    };
+
+    const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+' };
+
+    function fmt(n) {
+      if (n >= 1_000_000) return '$' + (n/1_000_000).toFixed(1) + 'M';
+      if (n >= 1_000)     return '$' + Math.round(n/1_000) + 'k';
+      return '$' + Math.round(n);
+    }
+
+    function getMinFitGpu(requiredMemGB) {
+      for (const spec of GPU_SPECS) {
+        if (spec.mem >= requiredMemGB) return spec;
+      }
+      return null;
+    }
+
+    function calculate() {
+      const provider       = document.getElementById('provider').value;
+      const modelSize      = document.getElementById('modelSize').value;
+      const quant          = document.getElementById('quantization').value;
+      const avgRps         = parseFloat(document.getElementById('avgRps').value) || 1;
+      const peakRps        = parseFloat(document.getElementById('peakRps').value) || avgRps * 4;
+      const trafficPattern = document.getElementById('trafficPattern').value;
+      const latencyMs      = parseFloat(document.getElementById('latency').value) || 500;
+      const seqLen         = parseInt(document.getElementById('seqLen').value);
+
+      const costs     = PROVIDER_COSTS[provider];
+      const modelMem  = MODEL_MEMORY[modelSize][quant];
+
+      // Estimate realistic batch size from peak RPS and latency
+      // batch ≈ peak_rps × (latency_sec) — requests in flight at peak
+      const latencySec   = latencyMs / 1000;
+      const peakBatch    = Math.max(1, Math.round(peakRps * latencySec));
+      const avgBatch     = Math.max(1, Math.round(avgRps  * latencySec));
+
+      // VRAM needed at peak: weights + KV cache for peak batch
+      const kvCacheGB    = (KV_PER_TOKEN_MB[modelSize] * seqLen * peakBatch) / 1024;
+      const totalVramNeeded = modelMem + kvCacheGB;
+
+      // Multi-GPU needed?
+      const multiGpu = totalVramNeeded > 192;
+
+      // Find minimum GPU that fits
+      const minFit = getMinFitGpu(totalVramNeeded);
+
+      // Scaling recommendation
+      // Spiky + high peak/avg ratio → horizontal; steady → vertical
+      const spikyRatio  = peakRps / avgRps;
+      const useHorizontal = trafficPattern === 'spiky' || spikyRatio >= 5;
+
+      let recGpu, nodeCount, scalingLabel, signal;
+
+      if (multiGpu) {
+        recGpu     = GPU_SPECS.find(s => s.key === 'h100');
+        const gpusNeeded = Math.ceil(totalVramNeeded / recGpu.mem);
+        nodeCount  = gpusNeeded;
+        scalingLabel = 'Tensor parallel';
+        signal = `A ${MODEL_LABELS[modelSize]} model at ${quant} requires ~${totalVramNeeded.toFixed(0)}GB VRAM at peak batch=${peakBatch} — <strong>no single GPU can fit this.</strong> Minimum ${gpusNeeded}x H100 (80GB each) with tensor parallelism required.`;
+
+      } else if (useHorizontal) {
+        recGpu     = minFit || GPU_SPECS[GPU_SPECS.length - 1];
+        // Each node handles avg batch; need enough nodes for peak
+        const nodesForPeak = Math.ceil(peakBatch / Math.max(1, avgBatch));
+        nodeCount  = Math.max(2, nodesForPeak);
+        scalingLabel = 'Horizontal';
+        signal = `Your traffic is <strong>spiky</strong> (${avgRps} avg → ${peakRps} peak req/s, ${spikyRatio.toFixed(1)}× ratio). Horizontal scaling on <strong>${recGpu.label}</strong> with autoscaling is more cost-effective than a single large GPU. Scale out at peak, scale in during quiet periods.`;
+
+      } else {
+        recGpu     = minFit || GPU_SPECS[GPU_SPECS.length - 1];
+        nodeCount  = Math.max(1, Math.ceil(peakBatch / Math.max(1, avgBatch)));
+        scalingLabel = 'Vertical';
+        signal = `Your traffic is <strong>steady</strong> (${avgRps} avg → ${peakRps} peak req/s). Vertical scaling on <strong>${recGpu.label}</strong> is a good fit — consistent load means you can keep GPUs efficiently utilised without autoscaling overhead.`;
+      }
+
+      // VRAM headroom
+      const headroomGB  = recGpu.mem - totalVramNeeded;
+      const headroomPct = Math.round((headroomGB / recGpu.mem) * 100);
+      let vramState;
+      if (headroomGB < 0)       { vramState = 'risk'; }
+      else if (headroomPct < 15) { vramState = 'warn'; }
+      else                       { vramState = 'ok';   }
+
+      // Estimated monthly cost
+      const gpuCost      = costs[recGpu.key] || 3.50;
+      const monthlyCost  = nodeCount * gpuCost * 730;
+
+      // Render
+      document.getElementById('recPrimary').textContent  = `${nodeCount}× ${recGpu.label}`;
+      document.getElementById('recSub').textContent      = `recommended for ${MODEL_LABELS[modelSize]} at ${quant} — ${provider.toUpperCase()}`;
+      document.getElementById('scalingType').textContent = scalingLabel;
+      document.getElementById('estCost').textContent     = fmt(monthlyCost) + '/mo';
+      document.getElementById('nodeCount').textContent   = `${nodeCount} node${nodeCount > 1 ? 's' : ''}`;
+
+      const vramEl = document.getElementById('vramHeadroom');
+      vramEl.textContent = headroomGB >= 0 ? `${headroomGB.toFixed(1)}GB free` : 'Insufficient';
+      document.getElementById('tileVram').setAttribute('data-state', vramState);
+
+      document.getElementById('signalBox').innerHTML = signal;
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+</body>
+</html>
