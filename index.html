@@ -672,7 +672,7 @@
       </div>
 
       <div class="field realtime-field">
-        <label>Traffic Pattern</label>
+        <label>Traffic Pattern <span class="tip" data-tip="Spiky traffic favors horizontal scaling (autoscale nodes up/down). Steady traffic favors vertical scaling (one well-utilized node). Note: GPU partitioning options (MIG, MPS, time-slicing) can reduce costs further for mixed workloads but add complexity — this calculator assumes dedicated GPU allocation per node.">ⓘ</span></label>
         <div class="select-wrap">
           <select id="trafficPattern">
             <option value="spiky">Spiky — bursts with quiet periods</option>
