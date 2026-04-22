@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GPU Sizing Calculator — Paralleliq</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0S2GQFHEH4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0S2GQFHEH4');
+  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -249,11 +257,138 @@
 
     footer a { color: var(--blue); text-decoration: none; }
 
+    /* ── Comparison ──────────────────────────────────────── */
+    #comparisonSection {
+      margin-top: 48px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .comparison-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .comparison-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .clear-all-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      width: auto;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .clear-all-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table th {
+      background: var(--card2);
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+
+    .comparison-table td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table tr:hover {
+      background: rgba(74, 108, 247, 0.08);
+    }
+
+    .scenario-name {
+      font-weight: 600;
+      color: var(--cyan);
+    }
+
+    .scenario-remove {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 2px 6px;
+      transition: color 0.2s;
+    }
+
+    .scenario-remove:hover {
+      color: #f87171;
+    }
+
+    .save-scenario-btn {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px dashed var(--border);
+      background: transparent;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    .save-scenario-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 196, 196, 0.08);
+    }
+
+    @media (max-width: 880px) {
+      #comparisonSection {
+        max-width: 580px;
+      }
+      .comparison-table {
+        font-size: 0.8rem;
+      }
+      .comparison-table th, .comparison-table td {
+        padding: 10px 8px;
+      }
+    }
+
     @media (max-width: 480px) {
       .form-grid { grid-template-columns: 1fr; }
       .breakdown { grid-template-columns: 1fr; }
       .card { padding: 24px 20px; }
       .rec-primary { font-size: 1.6rem; }
+      #comparisonSection {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -382,6 +517,7 @@
       <button onclick="window.location.href='https://github.com/paralleliq/piqc'">
         Already Deployed? Run a Free Scan
       </button>
+      <button class="save-scenario-btn" onclick="saveScenario()">+ Add to Comparison</button>
       <div class="cta-section">
         <p>piqc scans your Kubernetes cluster in seconds. No agents, no instrumentation.<br/>
         <a href="mailto:info@paralleliq.ai">Questions? info@paralleliq.ai</a></p>
@@ -389,6 +525,31 @@
     </div>
 
   </div>
+
+  <!-- ── Comparison Section ── -->
+  <div id="comparisonSection" style="display:none">
+    <div class="comparison-header">
+      <h2>Scenario Comparison</h2>
+      <button class="clear-all-btn" onclick="clearAllScenarios()">Clear All</button>
+    </div>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>GPU</th>
+          <th>Nodes</th>
+          <th>Scaling</th>
+          <th>Monthly Cost</th>
+          <th>VRAM Headroom</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="scenarioTableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
 
   <footer>
     © 2026 Paralleliq · <a href="https://paralleliq.ai">paralleliq.ai</a> · <a href="https://github.com/paralleliq/piqc">Open-source scanner</a>
@@ -427,6 +588,10 @@
     };
 
     const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+' };
+
+    // Scenario storage
+    let scenarios = [];
+    let lastResult = null;
 
     function fmt(n) {
       if (n >= 1_000_000) return '$' + (n/1_000_000).toFixed(1) + 'M';
@@ -511,6 +676,25 @@
       const gpuCost      = costs[recGpu.key] || 3.50;
       const monthlyCost  = nodeCount * gpuCost * 730;
 
+      // Store result for comparison
+      lastResult = {
+        provider,
+        modelSize,
+        quant,
+        avgRps,
+        peakRps,
+        trafficPattern,
+        latencyMs,
+        seqLen,
+        recGpu,
+        nodeCount,
+        scalingLabel,
+        vramState,
+        headroomGB,
+        monthlyCost,
+        signal
+      };
+
       // Render
       document.getElementById('recPrimary').textContent  = `${nodeCount}× ${recGpu.label}`;
       document.getElementById('recSub').textContent      = `recommended for ${MODEL_LABELS[modelSize]} at ${quant} — ${provider.toUpperCase()}`;
@@ -525,6 +709,68 @@
       document.getElementById('signalBox').innerHTML = signal;
       document.getElementById('results').style.display = 'block';
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function saveScenario() {
+      if (!lastResult) return;
+      
+      // Generate a scenario name based on provider and quantization
+      const name = `${lastResult.provider.toUpperCase()} / ${lastResult.quant}`;
+      const scenario = {
+        id: Date.now(),
+        name,
+        ...lastResult
+      };
+
+      scenarios.push(scenario);
+      renderComparison();
+
+      // Scroll to comparison
+      document.getElementById('comparisonSection').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('comparisonSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    function removeScenario(id) {
+      scenarios = scenarios.filter(s => s.id !== id);
+      if (scenarios.length === 0) {
+        document.getElementById('comparisonSection').style.display = 'none';
+      } else {
+        renderComparison();
+      }
+    }
+
+    function clearAllScenarios() {
+      if (confirm('Clear all scenarios?')) {
+        scenarios = [];
+        document.getElementById('comparisonSection').style.display = 'none';
+      }
+    }
+
+    function renderComparison() {
+      const tbody = document.getElementById('scenarioTableBody');
+      tbody.innerHTML = '';
+
+      scenarios.forEach(scenario => {
+        const row = document.createElement('tr');
+        const headroom = scenario.headroomGB >= 0 
+          ? `${scenario.headroomGB.toFixed(1)}GB free` 
+          : 'Insufficient';
+
+        row.innerHTML = `
+          <td><span class="scenario-name">${scenario.name}</span></td>
+          <td>${scenario.recGpu.label}</td>
+          <td>${scenario.nodeCount}</td>
+          <td>${scenario.scalingLabel}</td>
+          <td><strong>${fmt(scenario.monthlyCost)}/mo</strong></td>
+          <td>${headroom}</td>
+          <td style="text-align: right;">
+            <button class="scenario-remove" onclick="removeScenario(${scenario.id})" title="Remove scenario">✕</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
     }
   </script>
 
