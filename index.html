@@ -43,7 +43,7 @@
     /* ── Header ─────────────────────────────────────────── */
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 28px;
     }
 
     header img {
@@ -63,6 +63,40 @@
       color: var(--muted);
       max-width: 520px;
       line-height: 1.6;
+    }
+
+    /* ── Mode Toggle ─────────────────────────────────────── */
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .mode-tab {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+      width: auto;
+      letter-spacing: 0;
+    }
+
+    .mode-tab.active {
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      color: #fff;
+    }
+
+    .mode-tab:hover:not(.active) {
+      color: var(--text);
     }
 
     /* ── Card ────────────────────────────────────────────── */
@@ -192,7 +226,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 28px;
+      margin-bottom: 12px;
     }
 
     .breakdown-item {
@@ -202,6 +236,8 @@
       padding: 14px 12px;
       text-align: center;
     }
+
+    .breakdown-item.full { grid-column: 1 / -1; }
 
     .breakdown-item .bi-value {
       font-size: 1.15rem;
@@ -225,6 +261,7 @@
       border: 1px solid rgba(74,108,247,0.25);
       border-radius: 8px;
       padding: 16px 18px;
+      margin-top: 16px;
       margin-bottom: 20px;
       font-size: 0.9rem;
       color: var(--text);
@@ -233,9 +270,133 @@
 
     .signal-box strong { color: var(--cyan); }
 
+    /* ── Share button ────────────────────────────────────── */
+    .share-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .share-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 8px;
+      width: auto;
+      transition: all 0.2s;
+    }
+
+    .share-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .share-btn.copied {
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+
+    /* ── Provider comparison ─────────────────────────────── */
+    .provider-comp {
+      margin-bottom: 20px;
+    }
+
+    .provider-comp-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .provider-comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .provider-comp-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .provider-comp-table tr:last-child td { border-bottom: none; }
+
+    .provider-comp-table td:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .provider-comp-table tr.current-provider td {
+      color: var(--cyan);
+    }
+
+    .provider-comp-table tr.current-provider td:last-child {
+      color: var(--cyan);
+    }
+
+    /* ── Lead capture ────────────────────────────────────── */
+    .lead-section {
+      background: linear-gradient(135deg, rgba(74,108,247,0.10), rgba(0,196,196,0.06));
+      border: 1px solid rgba(74,108,247,0.3);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .lead-section p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .lead-section p strong {
+      color: var(--text);
+    }
+
+    .lead-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lead-input-row input {
+      padding: 10px 14px;
+      flex: 1;
+      font-size: 0.9rem;
+    }
+
+    .lead-submit-btn {
+      width: auto;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .lead-success {
+      font-size: 0.88rem;
+      color: #4ade80;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .lead-error {
+      font-size: 0.88rem;
+      color: #f87171;
+      margin-top: 10px;
+      display: none;
+    }
+
     /* ── CTA ─────────────────────────────────────────────── */
     .cta-section {
-      margin-top: 40px;
+      margin-top: 16px;
       text-align: center;
     }
 
@@ -359,7 +520,7 @@
       font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.2s;
-      margin-top: 20px;
+      margin-top: 12px;
       font-weight: 600;
     }
 
@@ -386,9 +547,11 @@
       .breakdown { grid-template-columns: 1fr; }
       .card { padding: 24px 20px; }
       .rec-primary { font-size: 1.6rem; }
-      #comparisonSection {
-        max-width: 100%;
-      }
+      #comparisonSection { max-width: 100%; }
+      .lead-input-row { flex-direction: column; }
+      .lead-submit-btn { width: 100%; }
+      .share-row { flex-direction: column; }
+      .share-btn { width: 100%; }
     }
   </style>
 </head>
@@ -399,6 +562,12 @@
     <h1>GPU Sizing Calculator</h1>
     <p>Get a GPU type, node count, and scaling strategy recommendation based on your model and traffic pattern — before you deploy.</p>
   </header>
+
+  <!-- Mode toggle -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('realtime')" id="tabRealtime">Real-time Inference</button>
+    <button class="mode-tab" onclick="setMode('batch')" id="tabBatch">Batch Processing</button>
+  </div>
 
   <div class="card">
 
@@ -442,17 +611,18 @@
         </div>
       </div>
 
-      <div class="field">
+      <!-- Real-time fields -->
+      <div class="field realtime-field">
         <label>Avg Requests / sec</label>
         <input type="number" id="avgRps" placeholder="e.g. 5" min="0.1" step="0.1" />
       </div>
 
-      <div class="field">
+      <div class="field realtime-field">
         <label>Peak Requests / sec</label>
         <input type="number" id="peakRps" placeholder="e.g. 40" min="1" />
       </div>
 
-      <div class="field">
+      <div class="field realtime-field">
         <label>Traffic Pattern</label>
         <div class="select-wrap">
           <select id="trafficPattern">
@@ -463,9 +633,20 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field realtime-field">
         <label>Target Latency (ms)</label>
         <input type="number" id="latency" placeholder="e.g. 500" min="50" />
+      </div>
+
+      <!-- Batch fields -->
+      <div class="field batch-field" style="display:none">
+        <label>Daily Requests</label>
+        <input type="number" id="dailyRequests" placeholder="e.g. 100000" min="1" />
+      </div>
+
+      <div class="field batch-field" style="display:none">
+        <label>Avg Tokens / Request</label>
+        <input type="number" id="avgTokens" placeholder="e.g. 512" min="1" />
       </div>
 
       <div class="field full">
@@ -510,9 +691,35 @@
           <div class="bi-value" id="nodeCount">—</div>
           <div class="bi-label">Recommended nodes</div>
         </div>
+        <div class="breakdown-item full">
+          <div class="bi-value" id="throughputEst">—</div>
+          <div class="bi-label">Est. fleet throughput (tokens / sec)</div>
+        </div>
       </div>
 
       <div class="signal-box" id="signalBox"></div>
+
+      <!-- Provider cost comparison -->
+      <div class="provider-comp">
+        <div class="provider-comp-label">Same config across providers</div>
+        <table class="provider-comp-table" id="providerCompTable"></table>
+      </div>
+
+      <!-- Share -->
+      <div class="share-row">
+        <button class="share-btn" id="shareBtn" onclick="copyShareLink()">🔗 Copy shareable link</button>
+      </div>
+
+      <!-- Lead capture -->
+      <div class="lead-section">
+        <p><strong>Want this report in your inbox?</strong><br/>Enter your email and we'll send your full sizing recommendation plus tips for optimizing GPU spend.</p>
+        <div class="lead-input-row">
+          <input type="email" id="leadEmail" placeholder="you@company.com" />
+          <button class="lead-submit-btn" onclick="submitLead()">Send Report</button>
+        </div>
+        <div class="lead-success" id="leadSuccess">✓ Sent! Check your inbox.</div>
+        <div class="lead-error" id="leadError">Something went wrong — email us at info@paralleliq.ai</div>
+      </div>
 
       <button onclick="window.location.href='https://github.com/paralleliq/piqc'">
         Already Deployed? Run a Free Scan
@@ -541,6 +748,7 @@
           <th>Scaling</th>
           <th>Monthly Cost</th>
           <th>VRAM Headroom</th>
+          <th>Throughput</th>
           <th></th>
         </tr>
       </thead>
@@ -557,21 +765,27 @@
 
   <script>
     const PROVIDER_COSTS = {
-      'gcp':       { 't4':0.35, 'l4':0.54, 'a10':0.90, 'a100-40':2.21, 'a100-80':3.06, 'h100':3.50, 'mi300x':3.80 },
-      'aws':       { 't4':0.53, 'l4':0.81, 'a10':1.01, 'a100-40':3.21, 'a100-80':4.10, 'h100':5.12, 'mi300x':4.00 },
-      'azure':     { 't4':0.52, 'l4':0.78, 'a10':1.17, 'a100-40':3.06, 'a100-80':3.67, 'h100':4.77, 'mi300x':4.50 },
-      'coreweave': { 't4':0.28, 'l4':0.43, 'a10':0.85, 'a100-40':2.06, 'a100-80':2.76, 'h100':2.95, 'mi300x':3.20 },
-      'lambda':    { 't4':0.26, 'l4':0.40, 'a10':0.76, 'a100-40':1.99, 'a100-80':2.49, 'h100':2.49, 'mi300x':3.49 },
+      'gcp':       { 't4':0.35, 'l4':0.54, 'a10':0.90, 'a100-40':2.21, 'a100-80':3.06, 'h100':3.50, 'h200':5.20, 'mi300x':3.80 },
+      'aws':       { 't4':0.53, 'l4':0.81, 'a10':1.01, 'a100-40':3.21, 'a100-80':4.10, 'h100':5.12, 'h200':6.50, 'mi300x':4.00 },
+      'azure':     { 't4':0.52, 'l4':0.78, 'a10':1.17, 'a100-40':3.06, 'a100-80':3.67, 'h100':4.77, 'h200':6.10, 'mi300x':4.50 },
+      'coreweave': { 't4':0.28, 'l4':0.43, 'a10':0.85, 'a100-40':2.06, 'a100-80':2.76, 'h100':2.95, 'h200':4.20, 'mi300x':3.20 },
+      'lambda':    { 't4':0.26, 'l4':0.40, 'a10':0.76, 'a100-40':1.99, 'a100-80':2.49, 'h100':2.49, 'h200':3.80, 'mi300x':3.49 },
+    };
+
+    const PROVIDER_LABELS = {
+      'gcp': 'Google Cloud', 'aws': 'AWS', 'azure': 'Azure',
+      'coreweave': 'CoreWeave', 'lambda': 'Lambda Labs'
     };
 
     const GPU_SPECS = [
-      { key:'t4',      mem:16,  label:'NVIDIA T4'       },
-      { key:'l4',      mem:24,  label:'NVIDIA L4'       },
-      { key:'a10',     mem:24,  label:'NVIDIA A10'      },
-      { key:'a100-40', mem:40,  label:'A100 40GB'       },
-      { key:'a100-80', mem:80,  label:'A100 80GB'       },
-      { key:'h100',    mem:80,  label:'NVIDIA H100'     },
-      { key:'mi300x',  mem:192, label:'AMD MI300X'      },
+      { key:'t4',      mem:16,  label:'NVIDIA T4',    tokBase:6  },
+      { key:'l4',      mem:24,  label:'NVIDIA L4',    tokBase:10 },
+      { key:'a10',     mem:24,  label:'NVIDIA A10',   tokBase:15 },
+      { key:'a100-40', mem:40,  label:'A100 40GB',    tokBase:22 },
+      { key:'a100-80', mem:80,  label:'A100 80GB',    tokBase:35 },
+      { key:'h100',    mem:80,  label:'NVIDIA H100',  tokBase:55 },
+      { key:'h200',    mem:141, label:'NVIDIA H200',  tokBase:90 },
+      { key:'mi300x',  mem:192, label:'AMD MI300X',   tokBase:70 },
     ];
 
     const MODEL_MEMORY = {
@@ -589,14 +803,30 @@
 
     const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+' };
 
-    // Scenario storage
+    // Formspree endpoint — replace YOUR_FORM_ID with your actual Formspree form ID
+    const FORMSPREE_URL = 'https://formspree.io/f/xyklnbgy';
+
     let scenarios = [];
     let lastResult = null;
+    let currentMode = 'realtime';
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('tabRealtime').classList.toggle('active', mode === 'realtime');
+      document.getElementById('tabBatch').classList.toggle('active', mode === 'batch');
+      document.querySelectorAll('.realtime-field').forEach(el => el.style.display = mode === 'realtime' ? '' : 'none');
+      document.querySelectorAll('.batch-field').forEach(el => el.style.display = mode === 'batch' ? '' : 'none');
+    }
 
     function fmt(n) {
       if (n >= 1_000_000) return '$' + (n/1_000_000).toFixed(1) + 'M';
       if (n >= 1_000)     return '$' + Math.round(n/1_000) + 'k';
       return '$' + Math.round(n);
+    }
+
+    function fmtTok(n) {
+      if (n >= 1000) return (n/1000).toFixed(1) + 'k tok/s';
+      return Math.round(n) + ' tok/s';
     }
 
     function getMinFitGpu(requiredMemGB) {
@@ -606,94 +836,104 @@
       return null;
     }
 
-    function calculate() {
-      const provider       = document.getElementById('provider').value;
-      const modelSize      = document.getElementById('modelSize').value;
-      const quant          = document.getElementById('quantization').value;
-      const avgRps         = parseFloat(document.getElementById('avgRps').value) || 1;
-      const peakRps        = parseFloat(document.getElementById('peakRps').value) || avgRps * 4;
-      const trafficPattern = document.getElementById('trafficPattern').value;
-      const latencyMs      = parseFloat(document.getElementById('latency').value) || 500;
-      const seqLen         = parseInt(document.getElementById('seqLen').value);
+    function calcThroughput(gpu, modelMem, nodeCount) {
+      // Scale base tok/s (calibrated at 70B fp16 = 140GB) by model memory ratio
+      const scaled = gpu.tokBase * (140 / modelMem);
+      return Math.round(scaled * nodeCount);
+    }
 
+    function calculate() {
+      const provider  = document.getElementById('provider').value;
+      const modelSize = document.getElementById('modelSize').value;
+      const quant     = document.getElementById('quantization').value;
+      const seqLen    = parseInt(document.getElementById('seqLen').value);
       const costs     = PROVIDER_COSTS[provider];
       const modelMem  = MODEL_MEMORY[modelSize][quant];
 
-      // Estimate realistic batch size from peak RPS and latency
-      // batch ≈ peak_rps × (latency_sec) — requests in flight at peak
-      const latencySec   = latencyMs / 1000;
-      const peakBatch    = Math.max(1, Math.round(peakRps * latencySec));
-      const avgBatch     = Math.max(1, Math.round(avgRps  * latencySec));
-
-      // VRAM needed at peak: weights + KV cache for peak batch
-      const kvCacheGB    = (KV_PER_TOKEN_MB[modelSize] * seqLen * peakBatch) / 1024;
-      const totalVramNeeded = modelMem + kvCacheGB;
-
-      // Multi-GPU needed?
-      const multiGpu = totalVramNeeded > 192;
-
-      // Find minimum GPU that fits
-      const minFit = getMinFitGpu(totalVramNeeded);
-
-      // Scaling recommendation
-      // Spiky + high peak/avg ratio → horizontal; steady → vertical
-      const spikyRatio  = peakRps / avgRps;
-      const useHorizontal = trafficPattern === 'spiky' || spikyRatio >= 5;
-
       let recGpu, nodeCount, scalingLabel, signal;
 
-      if (multiGpu) {
-        recGpu     = GPU_SPECS.find(s => s.key === 'h100');
-        const gpusNeeded = Math.ceil(totalVramNeeded / recGpu.mem);
-        nodeCount  = gpusNeeded;
-        scalingLabel = 'Tensor parallel';
-        signal = `A ${MODEL_LABELS[modelSize]} model at ${quant} requires ~${totalVramNeeded.toFixed(0)}GB VRAM at peak batch=${peakBatch} — <strong>no single GPU can fit this.</strong> Minimum ${gpusNeeded}x H100 (80GB each) with tensor parallelism required.`;
+      if (currentMode === 'batch') {
+        const dailyReqs  = parseFloat(document.getElementById('dailyRequests').value) || 10000;
+        const avgTokens  = parseFloat(document.getElementById('avgTokens').value) || 512;
+        const dailyTokens = dailyReqs * avgTokens;
+        const reqTokPerSec = dailyTokens / (10 * 3600); // assume 10hr processing window
 
-      } else if (useHorizontal) {
-        recGpu     = minFit || GPU_SPECS[GPU_SPECS.length - 1];
-        // Each node handles avg batch; need enough nodes for peak
-        const nodesForPeak = Math.ceil(peakBatch / Math.max(1, avgBatch));
-        nodeCount  = Math.max(2, nodesForPeak);
-        scalingLabel = 'Horizontal';
-        signal = `Your traffic is <strong>spiky</strong> (${avgRps} avg → ${peakRps} peak req/s, ${spikyRatio.toFixed(1)}× ratio). Horizontal scaling on <strong>${recGpu.label}</strong> with autoscaling is more cost-effective than a single large GPU. Scale out at peak, scale in during quiet periods.`;
+        // Find GPU with best throughput/cost that fits model
+        let bestGpu = null, bestRatio = 0;
+        for (const gpu of GPU_SPECS) {
+          if (gpu.mem >= modelMem) {
+            const cost = costs[gpu.key] || 999;
+            const toks = gpu.tokBase * (140 / modelMem);
+            const ratio = toks / cost;
+            if (ratio > bestRatio) { bestRatio = ratio; bestGpu = gpu; }
+          }
+        }
+        recGpu = bestGpu || getMinFitGpu(modelMem) || GPU_SPECS[GPU_SPECS.length - 1];
+        const tokPerSec = recGpu.tokBase * (140 / modelMem);
+        nodeCount = Math.max(1, Math.ceil(reqTokPerSec / tokPerSec));
+        scalingLabel = 'Batch / Vertical';
+        signal = `Batch mode: <strong>${recGpu.label}</strong> offers the best throughput/cost ratio (~${Math.round(tokPerSec)} tok/s per node for ${MODEL_LABELS[modelSize]}). ${nodeCount} node${nodeCount > 1 ? 's' : ''} can process ${dailyReqs.toLocaleString()} daily requests in a 10-hour window. Scale nodes down when batch jobs aren't running to cut costs.`;
 
       } else {
-        recGpu     = minFit || GPU_SPECS[GPU_SPECS.length - 1];
-        nodeCount  = Math.max(1, Math.ceil(peakBatch / Math.max(1, avgBatch)));
-        scalingLabel = 'Vertical';
-        signal = `Your traffic is <strong>steady</strong> (${avgRps} avg → ${peakRps} peak req/s). Vertical scaling on <strong>${recGpu.label}</strong> is a good fit — consistent load means you can keep GPUs efficiently utilised without autoscaling overhead.`;
+        const avgRps         = parseFloat(document.getElementById('avgRps').value) || 1;
+        const peakRps        = parseFloat(document.getElementById('peakRps').value) || avgRps * 4;
+        const trafficPattern = document.getElementById('trafficPattern').value;
+        const latencyMs      = parseFloat(document.getElementById('latency').value) || 500;
+        const latencySec     = latencyMs / 1000;
+        const peakBatch      = Math.max(1, Math.round(peakRps * latencySec));
+        const avgBatch       = Math.max(1, Math.round(avgRps  * latencySec));
+        const kvCacheGB      = (KV_PER_TOKEN_MB[modelSize] * seqLen * peakBatch) / 1024;
+        const totalVramNeeded = modelMem + kvCacheGB;
+        const multiGpu       = totalVramNeeded > 192;
+        const minFit         = getMinFitGpu(totalVramNeeded);
+        const spikyRatio     = peakRps / avgRps;
+        const useHorizontal  = trafficPattern === 'spiky' || spikyRatio >= 5;
+
+        if (multiGpu) {
+          recGpu       = GPU_SPECS.find(s => s.key === 'h100');
+          const gpusNeeded = Math.ceil(totalVramNeeded / recGpu.mem);
+          nodeCount    = gpusNeeded;
+          scalingLabel = 'Tensor parallel';
+          signal = `A ${MODEL_LABELS[modelSize]} model at ${quant} requires ~${totalVramNeeded.toFixed(0)}GB VRAM at peak batch=${peakBatch} — <strong>no single GPU can fit this.</strong> Minimum ${gpusNeeded}× H100 (80GB each) with tensor parallelism required.`;
+
+        } else if (useHorizontal) {
+          recGpu       = minFit || GPU_SPECS[GPU_SPECS.length - 1];
+          const nodesForPeak = Math.ceil(peakBatch / Math.max(1, avgBatch));
+          nodeCount    = Math.max(2, nodesForPeak);
+          scalingLabel = 'Horizontal';
+          signal = `Your traffic is <strong>spiky</strong> (${avgRps} avg → ${peakRps} peak req/s, ${spikyRatio.toFixed(1)}× ratio). Horizontal scaling on <strong>${recGpu.label}</strong> with autoscaling is more cost-effective than a single large GPU. Scale out at peak, scale in during quiet periods.`;
+
+        } else {
+          recGpu       = minFit || GPU_SPECS[GPU_SPECS.length - 1];
+          nodeCount    = Math.max(1, Math.ceil(peakBatch / Math.max(1, avgBatch)));
+          scalingLabel = 'Vertical';
+          signal = `Your traffic is <strong>steady</strong> (${avgRps} avg → ${peakRps} peak req/s). Vertical scaling on <strong>${recGpu.label}</strong> is a good fit — consistent load means you can keep GPUs efficiently utilised without autoscaling overhead.`;
+        }
       }
 
       // VRAM headroom
-      const headroomGB  = recGpu.mem - totalVramNeeded;
+      const headroomGB  = recGpu.mem - MODEL_MEMORY[modelSize][quant];
       const headroomPct = Math.round((headroomGB / recGpu.mem) * 100);
       let vramState;
-      if (headroomGB < 0)       { vramState = 'risk'; }
+      if (headroomGB < 0)        { vramState = 'risk'; }
       else if (headroomPct < 15) { vramState = 'warn'; }
       else                       { vramState = 'ok';   }
 
-      // Estimated monthly cost
-      const gpuCost      = costs[recGpu.key] || 3.50;
-      const monthlyCost  = nodeCount * gpuCost * 730;
+      // Monthly cost
+      const gpuCost     = costs[recGpu.key] || 3.50;
+      const monthlyCost = nodeCount * gpuCost * 730;
 
-      // Store result for comparison
+      // Throughput
+      const throughput = calcThroughput(recGpu, MODEL_MEMORY[modelSize][quant], nodeCount);
+
       lastResult = {
-        provider,
-        modelSize,
-        quant,
-        avgRps,
-        peakRps,
-        trafficPattern,
-        latencyMs,
-        seqLen,
-        recGpu,
-        nodeCount,
-        scalingLabel,
-        vramState,
-        headroomGB,
-        monthlyCost,
-        signal
+        provider, modelSize, quant, seqLen,
+        recGpu, nodeCount, scalingLabel, vramState,
+        headroomGB, monthlyCost, signal, throughput, mode: currentMode
       };
+
+      // Update URL for sharing
+      updateURL();
 
       // Render
       document.getElementById('recPrimary').textContent  = `${nodeCount}× ${recGpu.label}`;
@@ -701,31 +941,155 @@
       document.getElementById('scalingType').textContent = scalingLabel;
       document.getElementById('estCost').textContent     = fmt(monthlyCost) + '/mo';
       document.getElementById('nodeCount').textContent   = `${nodeCount} node${nodeCount > 1 ? 's' : ''}`;
+      document.getElementById('throughputEst').textContent = fmtTok(throughput);
 
       const vramEl = document.getElementById('vramHeadroom');
       vramEl.textContent = headroomGB >= 0 ? `${headroomGB.toFixed(1)}GB free` : 'Insufficient';
       document.getElementById('tileVram').setAttribute('data-state', vramState);
 
       document.getElementById('signalBox').innerHTML = signal;
+
+      // Provider comparison
+      renderProviderComparison(recGpu, nodeCount, provider);
+
       document.getElementById('results').style.display = 'block';
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Reset lead form
+      document.getElementById('leadEmail').value = '';
+      document.getElementById('leadSuccess').style.display = 'none';
+      document.getElementById('leadError').style.display = 'none';
+      document.getElementById('shareBtn').textContent = '🔗 Copy shareable link';
+      document.getElementById('shareBtn').classList.remove('copied');
+    }
+
+    function renderProviderComparison(gpu, nodeCount, selectedProvider) {
+      const table = document.getElementById('providerCompTable');
+      const providers = ['gcp', 'aws', 'azure', 'coreweave', 'lambda'];
+      table.innerHTML = providers.map(p => {
+        const cost = PROVIDER_COSTS[p][gpu.key];
+        if (!cost) return '';
+        const monthly = fmt(nodeCount * cost * 730) + '/mo';
+        const isCurrent = p === selectedProvider;
+        return `<tr class="${isCurrent ? 'current-provider' : ''}">
+          <td>${PROVIDER_LABELS[p]}${isCurrent ? ' ✓' : ''}</td>
+          <td>${monthly}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateURL() {
+      if (!lastResult) return;
+      const r = lastResult;
+      const params = new URLSearchParams({
+        mode: r.mode,
+        provider: r.provider,
+        modelSize: r.modelSize,
+        quant: r.quant,
+        seqLen: r.seqLen,
+      });
+      if (r.mode === 'realtime') {
+        const avgRps = document.getElementById('avgRps').value;
+        const peakRps = document.getElementById('peakRps').value;
+        const traffic = document.getElementById('trafficPattern').value;
+        const latency = document.getElementById('latency').value;
+        if (avgRps) params.set('avgRps', avgRps);
+        if (peakRps) params.set('peakRps', peakRps);
+        params.set('traffic', traffic);
+        if (latency) params.set('latency', latency);
+      } else {
+        const daily = document.getElementById('dailyRequests').value;
+        const tokens = document.getElementById('avgTokens').value;
+        if (daily) params.set('dailyRequests', daily);
+        if (tokens) params.set('avgTokens', tokens);
+      }
+      history.replaceState(null, '', '?' + params.toString());
+    }
+
+    function copyShareLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('shareBtn');
+        btn.textContent = '✓ Link copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '🔗 Copy shareable link';
+          btn.classList.remove('copied');
+        }, 2500);
+      });
+    }
+
+    function loadFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has('modelSize')) return;
+
+      const set = (id, val) => { if (val && document.getElementById(id)) document.getElementById(id).value = val; };
+
+      const mode = params.get('mode') || 'realtime';
+      setMode(mode);
+
+      set('provider', params.get('provider'));
+      set('modelSize', params.get('modelSize'));
+      set('quantization', params.get('quant'));
+      set('seqLen', params.get('seqLen'));
+
+      if (mode === 'realtime') {
+        set('avgRps', params.get('avgRps'));
+        set('peakRps', params.get('peakRps'));
+        set('trafficPattern', params.get('traffic'));
+        set('latency', params.get('latency'));
+      } else {
+        set('dailyRequests', params.get('dailyRequests'));
+        set('avgTokens', params.get('avgTokens'));
+      }
+
+      calculate();
+    }
+
+    async function submitLead() {
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email || !email.includes('@')) return;
+      if (!lastResult) return;
+
+      const successEl = document.getElementById('leadSuccess');
+      const errorEl   = document.getElementById('leadError');
+      successEl.style.display = 'none';
+      errorEl.style.display   = 'none';
+
+      const payload = {
+        email,
+        recommendation: `${lastResult.nodeCount}× ${lastResult.recGpu.label}`,
+        provider: lastResult.provider,
+        model: MODEL_LABELS[lastResult.modelSize],
+        quantization: lastResult.quant,
+        scaling: lastResult.scalingLabel,
+        monthlyCost: fmt(lastResult.monthlyCost),
+        throughput: fmtTok(lastResult.throughput),
+        mode: lastResult.mode,
+      };
+
+      try {
+        const res = await fetch(FORMSPREE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          successEl.style.display = 'block';
+          gtag('event', 'lead_capture', { email_domain: email.split('@')[1] });
+        } else {
+          errorEl.style.display = 'block';
+        }
+      } catch {
+        errorEl.style.display = 'block';
+      }
     }
 
     function saveScenario() {
       if (!lastResult) return;
-      
-      // Generate a scenario name based on provider and quantization
       const name = `${lastResult.provider.toUpperCase()} / ${lastResult.quant}`;
-      const scenario = {
-        id: Date.now(),
-        name,
-        ...lastResult
-      };
-
-      scenarios.push(scenario);
+      scenarios.push({ id: Date.now(), name, ...lastResult });
       renderComparison();
-
-      // Scroll to comparison
       document.getElementById('comparisonSection').style.display = 'block';
       setTimeout(() => {
         document.getElementById('comparisonSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -751,27 +1115,26 @@
     function renderComparison() {
       const tbody = document.getElementById('scenarioTableBody');
       tbody.innerHTML = '';
-
-      scenarios.forEach(scenario => {
+      scenarios.forEach(s => {
+        const headroom = s.headroomGB >= 0 ? `${s.headroomGB.toFixed(1)}GB free` : 'Insufficient';
         const row = document.createElement('tr');
-        const headroom = scenario.headroomGB >= 0 
-          ? `${scenario.headroomGB.toFixed(1)}GB free` 
-          : 'Insufficient';
-
         row.innerHTML = `
-          <td><span class="scenario-name">${scenario.name}</span></td>
-          <td>${scenario.recGpu.label}</td>
-          <td>${scenario.nodeCount}</td>
-          <td>${scenario.scalingLabel}</td>
-          <td><strong>${fmt(scenario.monthlyCost)}/mo</strong></td>
+          <td><span class="scenario-name">${s.name}</span></td>
+          <td>${s.recGpu.label}</td>
+          <td>${s.nodeCount}</td>
+          <td>${s.scalingLabel}</td>
+          <td><strong>${fmt(s.monthlyCost)}/mo</strong></td>
           <td>${headroom}</td>
-          <td style="text-align: right;">
-            <button class="scenario-remove" onclick="removeScenario(${scenario.id})" title="Remove scenario">✕</button>
-          </td>
-        `;
+          <td>${fmtTok(s.throughput)}</td>
+          <td style="text-align:right">
+            <button class="scenario-remove" onclick="removeScenario(${s.id})" title="Remove">✕</button>
+          </td>`;
         tbody.appendChild(row);
       });
     }
+
+    // Auto-load from URL on page start
+    window.addEventListener('DOMContentLoaded', loadFromURL);
   </script>
 
 </body>
