@@ -553,6 +553,55 @@
       .share-row { flex-direction: column; }
       .share-btn { width: 100%; }
     }
+
+    /* ── Tooltips ────────────────────────────────────────── */
+    .tip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: help;
+      color: var(--muted);
+      font-size: 0.78em;
+      margin-left: 5px;
+      vertical-align: middle;
+      opacity: 0.7;
+    }
+
+    .tip::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a3a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 0.78rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      width: 250px;
+      line-height: 1.55;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s;
+      z-index: 200;
+      white-space: normal;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .tip:hover::after { opacity: 1; }
+
+    .assumptions-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 4px;
+      margin-bottom: 16px;
+      opacity: 0.75;
+    }
   </style>
 </head>
 <body>
@@ -587,7 +636,7 @@
       </div>
 
       <div class="field">
-        <label>Model Size</label>
+        <label>Model Size <span class="tip" data-tip="Memory estimates assume standard transformer architecture (e.g. Llama, Mistral). MoE models like Mixtral have different profiles — active parameter count is lower but total weight memory still applies.">ⓘ</span></label>
         <div class="select-wrap">
           <select id="modelSize">
             <option value="7b">7B – 8B</option>
@@ -601,7 +650,7 @@
       </div>
 
       <div class="field">
-        <label>Quantization</label>
+        <label>Quantization <span class="tip" data-tip="Reduces model memory footprint. fp16/bf16 is full precision. int8 is ~2× smaller with minimal quality loss. int4 is ~4× smaller but may affect output quality — test before using in production.">ⓘ</span></label>
         <div class="select-wrap">
           <select id="quantization">
             <option value="fp16">fp16 / bf16</option>
@@ -613,12 +662,12 @@
 
       <!-- Real-time fields -->
       <div class="field realtime-field">
-        <label>Avg Requests / sec</label>
+        <label>Avg Requests / sec <span class="tip" data-tip="Sustained baseline request rate during normal operation. Used with target latency to estimate typical concurrent batch size (batch ≈ RPS × latency in seconds).">ⓘ</span></label>
         <input type="number" id="avgRps" placeholder="e.g. 5" min="0.1" step="0.1" />
       </div>
 
       <div class="field realtime-field">
-        <label>Peak Requests / sec</label>
+        <label>Peak Requests / sec <span class="tip" data-tip="Maximum burst request rate. The peak-to-average ratio drives the horizontal vs vertical scaling decision — a ratio ≥5× triggers autoscaling recommendations.">ⓘ</span></label>
         <input type="number" id="peakRps" placeholder="e.g. 40" min="1" />
       </div>
 
@@ -634,7 +683,7 @@
       </div>
 
       <div class="field realtime-field">
-        <label>Target Latency (ms)</label>
+        <label>Target Latency (ms) <span class="tip" data-tip="End-to-end response latency — not time to first token (TTFT), which is typically much shorter. Higher latency tolerance allows larger concurrent batches but increases KV cache memory pressure.">ⓘ</span></label>
         <input type="number" id="latency" placeholder="e.g. 500" min="50" />
       </div>
 
@@ -650,7 +699,7 @@
       </div>
 
       <div class="field full">
-        <label>Max Context Length</label>
+        <label>Max Context Length <span class="tip" data-tip="Maximum input + output tokens per request. Longer contexts increase KV cache memory significantly at peak load — this is added on top of model weight memory to determine total VRAM required.">ⓘ</span></label>
         <div class="select-wrap">
           <select id="seqLen">
             <option value="512">512 tokens</option>
@@ -696,6 +745,8 @@
           <div class="bi-label">Est. fleet throughput (tokens / sec)</div>
         </div>
       </div>
+
+      <p class="assumptions-note">⚠ Estimates assume an optimized serving framework (vLLM-equivalent) and standard transformer architecture. Throughput is scaled from empirical baselines and will vary by serving stack, driver version, and workload shape. Use as a starting point, not a guarantee.</p>
 
       <div class="signal-box" id="signalBox"></div>
 
