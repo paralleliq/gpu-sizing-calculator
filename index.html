@@ -754,6 +754,7 @@
       <div class="provider-comp">
         <div class="provider-comp-label">Same config across providers</div>
         <table class="provider-comp-table" id="providerCompTable"></table>
+        <div style="font-size:0.72rem;color:#888;margin-top:6px;">* Prices are estimates based on on-demand rates and may vary. Check provider pricing pages for current rates.</div>
       </div>
 
       <!-- Share -->
@@ -901,7 +902,7 @@
       const costs     = PROVIDER_COSTS[provider];
       const modelMem  = MODEL_MEMORY[modelSize][quant];
 
-      let recGpu, nodeCount, scalingLabel, signal;
+      let recGpu, nodeCount, scalingLabel, signal, totalVramNeeded;
 
       if (currentMode === 'batch') {
         const dailyReqs  = parseFloat(document.getElementById('dailyRequests').value) || 10000;
@@ -922,6 +923,7 @@
         recGpu = bestGpu || getMinFitGpu(modelMem) || GPU_SPECS[GPU_SPECS.length - 1];
         const tokPerSec = recGpu.tokBase * (140 / modelMem);
         nodeCount = Math.max(1, Math.ceil(reqTokPerSec / tokPerSec));
+        totalVramNeeded = modelMem;
         scalingLabel = 'Batch / Vertical';
         signal = `Batch mode: <strong>${recGpu.label}</strong> offers the best throughput/cost ratio (~${Math.round(tokPerSec)} tok/s per node for ${MODEL_LABELS[modelSize]}). ${nodeCount} node${nodeCount > 1 ? 's' : ''} can process ${dailyReqs.toLocaleString()} daily requests in a 10-hour window. Scale nodes down when batch jobs aren't running to cut costs.`;
 
@@ -934,7 +936,7 @@
         const peakBatch      = Math.max(1, Math.round(peakRps * latencySec));
         const avgBatch       = Math.max(1, Math.round(avgRps  * latencySec));
         const kvCacheGB      = (KV_PER_TOKEN_MB[modelSize] * seqLen * peakBatch) / 1024;
-        const totalVramNeeded = modelMem + kvCacheGB;
+        totalVramNeeded = modelMem + kvCacheGB;
         const multiGpu       = totalVramNeeded > 192;
         const minFit         = getMinFitGpu(totalVramNeeded);
         const spikyRatio     = peakRps / avgRps;
@@ -963,7 +965,7 @@
       }
 
       // VRAM headroom
-      const headroomGB  = recGpu.mem - MODEL_MEMORY[modelSize][quant];
+      const headroomGB  = recGpu.mem - totalVramNeeded;
       const headroomPct = Math.round((headroomGB / recGpu.mem) * 100);
       let vramState;
       if (headroomGB < 0)        { vramState = 'risk'; }
