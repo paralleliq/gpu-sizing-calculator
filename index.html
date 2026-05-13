@@ -858,8 +858,7 @@
 
     const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+' };
 
-    // Formspree endpoint — replace YOUR_FORM_ID with your actual Formspree form ID
-    const FORMSPREE_URL = 'https://formspree.io/f/xyklnbgy';
+    const FORM_URL = 'https://api.web3forms.com/submit';
 
     let scenarios = [];
     let lastResult = null;
@@ -1113,6 +1112,8 @@
       errorEl.style.display   = 'none';
 
       const payload = {
+        access_key: '169d21e8-3750-4079-97ae-8de5198250d6',
+        subject: 'Lead: GPU Sizing Calculator',
         email,
         calculator: 'GPU Sizing Calculator',
         recommendation: `${lastResult.nodeCount}× ${lastResult.recGpu.label}`,
@@ -1126,7 +1127,7 @@
       };
 
       try {
-        const res = await fetch(FORMSPREE_URL, {
+        const res = await fetch(FORM_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify(payload),
