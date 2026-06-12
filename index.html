@@ -642,12 +642,15 @@
         <label>Model Size <span class="tip" data-tip="Memory estimates assume standard transformer architecture (e.g. Llama, Mistral). MoE models like Mixtral have different profiles — active parameter count is lower but total weight memory still applies.">ⓘ</span></label>
         <div class="select-wrap">
           <select id="modelSize">
-            <option value="7b">7B – 8B</option>
-            <option value="13b">13B</option>
+            <option value="7b">7B – 8B (Llama 3 / Mistral)</option>
+            <option value="13b">13B (Llama 2)</option>
             <option value="22b">22B</option>
             <option value="30b">30B – 40B</option>
-            <option value="70b" selected>70B – 72B</option>
+            <option value="70b" selected>70B – 72B (Llama 3 / Mixtral)</option>
             <option value="180b">180B+</option>
+            <option value="gemma2-2b">Gemma 2 2B</option>
+            <option value="gemma2-9b">Gemma 2 9B</option>
+            <option value="gemma2-27b">Gemma 2 27B</option>
           </select>
         </div>
       </div>
@@ -844,19 +847,23 @@
     ];
 
     const MODEL_MEMORY = {
-      '7b':  { 'fp16':14,  'int8':7,   'int4':4  },
-      '13b': { 'fp16':26,  'int8':13,  'int4':7  },
-      '22b': { 'fp16':44,  'int8':22,  'int4':11 },
-      '30b': { 'fp16':60,  'int8':30,  'int4':15 },
-      '70b': { 'fp16':140, 'int8':70,  'int4':35 },
-      '180b':{ 'fp16':360, 'int8':180, 'int4':90 },
+      '7b':        { 'fp16':14,  'int8':7,   'int4':4  },
+      '13b':       { 'fp16':26,  'int8':13,  'int4':7  },
+      '22b':       { 'fp16':44,  'int8':22,  'int4':11 },
+      '30b':       { 'fp16':60,  'int8':30,  'int4':15 },
+      '70b':       { 'fp16':140, 'int8':70,  'int4':35 },
+      '180b':      { 'fp16':360, 'int8':180, 'int4':90 },
+      'gemma2-2b': { 'fp16':5,   'int8':3,   'int4':2  },
+      'gemma2-9b': { 'fp16':18,  'int8':9,   'int4':5  },
+      'gemma2-27b':{ 'fp16':54,  'int8':27,  'int4':14 },
     };
 
     const KV_PER_TOKEN_MB = {
-      '7b':0.50, '13b':0.82, '22b':1.57, '30b':2.02, '70b':2.62, '180b':6.29
+      '7b':0.50, '13b':0.82, '22b':1.57, '30b':2.02, '70b':2.62, '180b':6.29,
+      'gemma2-2b':0.10, 'gemma2-9b':0.33, 'gemma2-27b':0.36,
     };
 
-    const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+' };
+    const MODEL_LABELS = { '7b':'7B–8B','13b':'13B','22b':'22B','30b':'30B–40B','70b':'70B–72B','180b':'180B+','gemma2-2b':'Gemma 2 2B','gemma2-9b':'Gemma 2 9B','gemma2-27b':'Gemma 2 27B' };
 
     const FORM_URL = 'https://api.web3forms.com/submit';
 
